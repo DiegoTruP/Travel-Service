@@ -16,10 +16,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class TravelRequestDTO {
 	
-	@NotBlank
+	@NotBlank(message = "Source should not be blank")
 	@NotNull
 	String source;
-	@NotBlank
+	@NotBlank(message = "Destination should not be blank")
 	@NotNull
 	String destination;
 	@Temporal(TemporalType.DATE)
@@ -32,7 +32,7 @@ public class TravelRequestDTO {
 	@NotNull
 	@Min(value = 1,message = "Train ID should be greater or equal to 1")
 	Integer trainId;
-	@Min(0)
+	@Min(value = 0,message = "Price should be greater or equal to 0")
 	Double price;
 
 	public String getSource() {
