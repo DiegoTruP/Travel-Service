@@ -13,7 +13,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import io.swagger.v3.oas.annotations.Hidden;
 
 public class TravelRequestDTO {
 	
@@ -25,6 +24,7 @@ public class TravelRequestDTO {
 	String destination;
 	@Temporal(TemporalType.DATE)
 	LocalDate date;
+	@NotNull
 	@Temporal(TemporalType.TIME)
 	@DateTimeFormat(style = "hh:mm")
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm")
