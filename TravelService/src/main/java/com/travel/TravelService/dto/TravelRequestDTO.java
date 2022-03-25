@@ -12,33 +12,28 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.v3.oas.annotations.Hidden;
 
-public class TravelDTO {
+public class TravelRequestDTO {
 	
-	Integer travelId;
-	
+	@NotBlank
+	@NotNull
 	String source;
-
+	@NotBlank
+	@NotNull
 	String destination;
-
+	@Temporal(TemporalType.DATE)
 	LocalDate date;
-
+	@Temporal(TemporalType.TIME)
+	@DateTimeFormat(style = "hh:mm")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm")
 	LocalTime time;
-
+	@NotNull
+	@Min(value = 1,message = "Train ID should be greater or equal to 1")
 	Integer trainId;
-
+	@Min(0)
 	Double price;
-
-	public Integer getTravelId() {
-		return travelId;
-	}
-
-	public void setTravelId(Integer travelId) {
-		this.travelId = travelId;
-	}
 
 	public String getSource() {
 		return source;
@@ -88,10 +83,9 @@ public class TravelDTO {
 		this.price = price;
 	}
 
-	public TravelDTO(Integer travelId, String source, String destination, LocalDate date, LocalTime time,
+	public TravelRequestDTO( String source, String destination, LocalDate date, LocalTime time,
 			Integer trainId, Double price) {
 		super();
-		this.travelId = travelId;
 		this.source = source;
 		this.destination = destination;
 		this.date = date;
@@ -99,10 +93,4 @@ public class TravelDTO {
 		this.trainId = trainId;
 		this.price = price;
 	}
-
-	
-	
-	
-	
-	
 }
