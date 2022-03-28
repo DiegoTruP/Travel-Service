@@ -83,14 +83,14 @@ public class TravelRequestDTO {
 		this.price = price;
 	}
 
-	public TravelRequestDTO( String source, String destination, LocalDate date, LocalTime time,
-			Integer trainId, Double price) {
-		super();
-		this.source = source;
-		this.destination = destination;
-		this.date = date;
-		this.time = time;
-		this.trainId = trainId;
-		this.price = price;
-	}
+//	public TravelRequestDTO( String source, String destination, LocalDate date, LocalTime time,
+//			Integer trainId, Double price) {
+//		super();
+//		this.source = source;
+//		this.destination = destination;
+//		this.date = date;
+//		this.time = time;
+//		this.trainId = trainId;
+//		this.price = price;
+//	}
 }
