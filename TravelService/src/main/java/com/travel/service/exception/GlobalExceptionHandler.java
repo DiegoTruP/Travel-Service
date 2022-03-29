@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import constant.ErrorConstant;
 
@@ -33,6 +34,16 @@ public class GlobalExceptionHandler {
 		validationErrorResponse.setDate(LocalDateTime.now());
 		
 		return new ResponseEntity<>(validationErrorResponse,HttpStatus.OK);
+	}
+	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleArgumentMismatchException(MethodArgumentTypeMismatchException ex){
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setStatusCode(ex.getErrorCode());
+		
+		
+		return new ResponseEntity<>(errorResponse,HttpStatus.OK);
 	}
 	
 	
