@@ -2,6 +2,7 @@ package com.travel.service.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Service;
 
 import com.travel.service.client.TrainClient;
 import com.travel.service.client.UserClient;
+import com.travel.service.dto.TrainDetailsDto;
 import com.travel.service.dto.TrainDetailsResponseDto;
 import com.travel.service.dto.TravelDTO;
 import com.travel.service.dto.TravelRequestDTO;
+import com.travel.service.dto.TravelTrainDTO;
 import com.travel.service.dto.UserRequestDTO;
 import com.travel.service.dto.UserResponseDTO;
 import com.travel.service.entity.Travel;
@@ -42,18 +45,12 @@ public class TravelServiceImpl implements TravelService{
 	}
 
 	@Override
-	public List<TrainDetailsResponseDto> getAvailableTrainsBySearch(String source, String destination, String date) {
-		List<TravelDTO> travelList = travelRepository.findAllbySearch(source,destination);//,date);
-		
-		
-		
-		List<TrainDetailsResponseDto> trainList;
-		
-		trainList = travelList.stream().map(travel -> trainClient.getTrainById(travel.getTrainId()).getBody()).collect(Collectors.toList());
-		
+	public List<TrainDetailsDto> getAvailableTrainsBySearch(String source, String destination, String date) {
+		LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+		List<TravelDTO> travelList = travelRepository.findAllbySearch(source,destination,localDate);
+		List<TrainDetailsDto> trainList;
+		trainList = travelList.stream().map(travel -> trainClient.getTrainById(travel.getTrainId()).getBody().getData()).collect(Collectors.toList());
 		return trainList;
-	
-
 	}
 
 	@Override
@@ -75,19 +72,12 @@ public class TravelServiceImpl implements TravelService{
 	}
 
 	@Override
-	public ResponseEntity<TrainDetailsResponseDto> getTrains() {
-		
-		UserRequestDTO userRequest = new UserRequestDTO(1, "Diego", "hcl12345");
-		
-		UserResponseDTO  userResponse = userClient.Login(userRequest).getBody();
-		
-		return trainClient.getTrainById(1);
-	}
-
-	@Override
-	public ResponseEntity<UserResponseDTO> AthenticateUser() {
-		UserRequestDTO userRequestDTO = new UserRequestDTO(1, "Diego", "hcl12345");
-			return userClient.Login(userRequestDTO);
+	public List<TravelTrainDTO> getAvailableTravelsBySearch(String source, String destination, LocalDate date) {
+		List<TravelTrainDTO> travelList = travelRepository.findAllTravelTrainbySearch(source,destination,date);
+		travelList.stream().forEach(travel -> {
+			BeanUtils.copyProperties(trainClient.getTrainById(travel.getTrainId()).getBody().getData(), travel);
+		});
+		return travelList;
 	}
 
 }

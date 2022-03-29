@@ -1,4 +1,4 @@
-package com.travel.TravelService.service.impl;
+package com.travel.service.service.impl;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,7 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import com.travel.service.client.TrainClient;
+import com.travel.service.dto.TrainDetailsDto;
+import com.travel.service.dto.TrainDetailsResponseDto;
 import com.travel.service.dto.TravelDTO;
 import com.travel.service.dto.TravelRequestDTO;
 import com.travel.service.entity.Travel;
@@ -32,6 +37,10 @@ class TravelServiceImplTest {
 	@Mock
 	TravelRepository travelRepository;
 	
+	@Mock
+	TrainClient trainClient;
+	
+	
 	@InjectMocks
 	TravelServiceImpl travelServiceImpl;
 	
@@ -42,6 +51,10 @@ class TravelServiceImplTest {
 	TravelDTO travelDto2;
 	
 	TravelRequestDTO travelRequest;
+	
+	TrainDetailsResponseDto trainResponse;
+	
+	TrainDetailsDto trainDetailsDto;
 	
 	@BeforeEach
 	void setUp() {
@@ -55,6 +68,14 @@ class TravelServiceImplTest {
 		travelRequest.setSource("Canada");
 		travelRequest.setPrice(150.0);
 		travelRequest.setTrainId(1);
+		
+		trainDetailsDto = new TrainDetailsDto();
+		trainDetailsDto.setTrainId(1);
+		trainDetailsDto.setTrainName("Chepe");
+		trainDetailsDto.setTrainCapacity(150);
+		
+		trainResponse = new TrainDetailsResponseDto("Train fetched", "T-200");
+		trainResponse.setData(trainDetailsDto);
 	}
 	
 	
@@ -72,11 +93,11 @@ class TravelServiceImplTest {
 	@Test
 	@DisplayName("Get all trains by search test : positive")
 	void get_Available_Trains_By_Search_Test() {
-		//when(travelRepository.findAllbySearch(any(String.class),any(String.class))).thenReturn(List.of(travelDto1,travelDto2));
-		
-//		List<TravelDTO> travelDtoList = travelServiceImpl.getAvailableTrainsBySearch("%","%","%");
-//		assertNotNull(travelDtoList);
-//		assertEquals(travelDtoList.get(0), travelDto1);
+		when(travelRepository.findAllbySearch(any(String.class),any(String.class),any(LocalDate.class))).thenReturn(List.of(travelDto1,travelDto2));
+		when(trainClient.getTrainById(any(Integer.class))).thenReturn(new ResponseEntity<TrainDetailsResponseDto>(trainResponse,HttpStatus.OK));
+		List<TrainDetailsDto> trainDtoList = travelServiceImpl.getAvailableTrainsBySearch("%","%",LocalDate.now().toString());
+		assertNotNull(trainDtoList);
+		assertEquals(trainDtoList.get(0), trainResponse.getData());
 	}
 	
 	
@@ -88,8 +109,8 @@ class TravelServiceImplTest {
 		
 		TravelDTO travelDto = travelServiceImpl.getTravelById(1);
 		assertNotNull(travelDto);
-		assertEquals(travelDto1.getDestination(),"USA");
-		assertEquals(travelDto.getPrice(), 150);
+		assertEquals("USA",travelDto1.getDestination());
+		assertEquals(150,travelDto.getPrice());
 	}
 	
 	@Test
@@ -107,9 +128,11 @@ class TravelServiceImplTest {
 		
 		TravelDTO travelDto = travelServiceImpl.addTravel(travelRequest);
 		assertNotNull(travelDto);
-		assertEquals(travelDto.getDestination(), travelDto1.getDestination());
+		assertEquals( travelDto1.getDestination(),travelDto.getDestination());
 		
 	}
+	
+	
 	
 	
 	
