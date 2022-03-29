@@ -8,8 +8,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.naming.ServiceUnavailableException;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +28,12 @@ import com.travel.service.dto.TravelTrainDTO;
 import com.travel.service.dto.UserRequestDTO;
 import com.travel.service.dto.UserResponseDTO;
 import com.travel.service.entity.Travel;
+import com.travel.service.exception.ServiceNotAvailableException;
 import com.travel.service.exception.TravelNotFoundException;
 import com.travel.service.repository.TravelRepository;
 import com.travel.service.service.TravelService;
+
+import constant.ErrorConstant;
 
 @Service
 public class TravelServiceImpl implements TravelService{
@@ -38,6 +46,9 @@ public class TravelServiceImpl implements TravelService{
 	
 	@Autowired(required = false)
 	UserClient userClient;
+	
+	@Autowired
+	CircuitBreakerFactory circuitBreakerFactory;
 
 	@Override
 	public List<TravelDTO> getAvailableTravels() {
@@ -75,9 +86,24 @@ public class TravelServiceImpl implements TravelService{
 	public List<TravelTrainDTO> getAvailableTravelsBySearch(String source, String destination, LocalDate date) {
 		List<TravelTrainDTO> travelList = travelRepository.findAllTravelTrainbySearch(source,destination,date);
 		travelList.stream().forEach(travel -> {
-			BeanUtils.copyProperties(trainClient.getTrainById(travel.getTrainId()).getBody().getData(), travel);
+			ResponseEntity<TrainDetailsResponseDto> trainResponse = getTrainById(travel.getTrainId());
+			if(trainResponse.getStatusCode().equals(HttpStatus.SERVICE_UNAVAILABLE))
+				throw new ServiceNotAvailableException("Train Service Not Available");
+			BeanUtils.copyProperties(trainResponse.getBody().getData(), travel);
 		});
 		return travelList;
+	}
+	
+	private ResponseEntity<TrainDetailsResponseDto> getTrainById(Integer trainId) {
+		CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+		return circuitBreaker.run(() -> trainClient.getTrainById(trainId),throwable -> getDefaultTrainResponse());
+	}
+	
+	private ResponseEntity<TrainDetailsResponseDto> getDefaultTrainResponse() {
+		TrainDetailsResponseDto response = new TrainDetailsResponseDto("Conection Error", ErrorConstant.SERVICE_NOT_FOUND);
+		response.setData(new TrainDetailsDto());
+		return new ResponseEntity<>(response,HttpStatus.SERVICE_UNAVAILABLE);
+		
 	}
 
 }

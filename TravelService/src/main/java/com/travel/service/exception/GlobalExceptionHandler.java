@@ -46,5 +46,14 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse,HttpStatus.OK);
 	}
 	
+	@ExceptionHandler(ServiceNotAvailableException.class)
+	ResponseEntity<ErrorResponse> travelNotFound(ServiceNotAvailableException ex){
+		ErrorResponse response = new ErrorResponse();
+		response.setMessage(ex.getMessage());
+		response.setStatusCode(ErrorConstant.SERVICE_NOT_AVAILABLE);
+		
+		return new ResponseEntity<>(response,HttpStatus.OK);
+	}
+	
 	
 }
