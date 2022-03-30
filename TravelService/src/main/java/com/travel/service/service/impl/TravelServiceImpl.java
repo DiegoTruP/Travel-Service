@@ -29,6 +29,7 @@ import com.travel.service.dto.UserRequestDTO;
 import com.travel.service.dto.UserResponseDTO;
 import com.travel.service.entity.Travel;
 import com.travel.service.exception.ServiceNotAvailableException;
+import com.travel.service.exception.TrainNotFoundException;
 import com.travel.service.exception.TravelNotFoundException;
 import com.travel.service.repository.TravelRepository;
 import com.travel.service.service.TravelService;
@@ -89,6 +90,8 @@ public class TravelServiceImpl implements TravelService{
 			ResponseEntity<TrainDetailsResponseDto> trainResponse = getTrainById(travel.getTrainId());
 			if(trainResponse.getStatusCode().equals(HttpStatus.SERVICE_UNAVAILABLE))
 				throw new ServiceNotAvailableException("Train Service Not Available");
+			if(trainResponse.getBody().getStatusCode().equals("T404"))
+				throw new TrainNotFoundException(trainResponse.getBody().getMessage());
 			BeanUtils.copyProperties(trainResponse.getBody().getData(), travel);
 		});
 		return travelList;
@@ -100,10 +103,11 @@ public class TravelServiceImpl implements TravelService{
 	}
 	
 	private ResponseEntity<TrainDetailsResponseDto> getDefaultTrainResponse() {
-		TrainDetailsResponseDto response = new TrainDetailsResponseDto("Conection Error", ErrorConstant.SERVICE_NOT_FOUND);
+		TrainDetailsResponseDto response = new TrainDetailsResponseDto("Connection Error", ErrorConstant.SERVICE_NOT_FOUND);
 		response.setData(new TrainDetailsDto());
+//		if(response.getMessage().equals("Connection Error"))
+//			throw new ServiceNotAvailableException("Service Not Available");
 		return new ResponseEntity<>(response,HttpStatus.SERVICE_UNAVAILABLE);
-		
 	}
 
 }

@@ -5,4 +5,5 @@ public class ErrorConstant {
 	public static final String INVALID_ARGS = "ARGS400";
 	public static final String SERVICE_NOT_FOUND = "SERVICE404";
 	public static final String SERVICE_NOT_AVAILABLE = "SERVICE503";
+	public static final String TRAIN_NOT_FOUND = "T404";
 }
