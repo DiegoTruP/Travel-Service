@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import constant.ErrorConstant;
+import com.travel.service.constant.ErrorConstant;
+
+import feign.FeignException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,6 +56,23 @@ public class GlobalExceptionHandler {
 		
 		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
+	
+	@ExceptionHandler(FeignException.class)
+	public ResponseEntity<ErrorResponse> handleException(FeignException ex){
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setStatusCode("F500");
+		return new ResponseEntity<>(errorResponse,HttpStatus.OK);
+	}
+	
+	@ExceptionHandler(TrainNotFoundException.class)
+	public ResponseEntity<ErrorResponse> exceptionHandler(TrainNotFoundException ex) {
+		ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setStatusCode(ErrorConstant.TRAIN_NOT_FOUND);
+		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+	}
+	
 	
 	
 }

@@ -80,7 +80,7 @@ public class TravelController {
 	@PostMapping("/travels")
 	public ResponseEntity<ResponseDTO> addTravel(@RequestBody@Valid TravelRequestDTO travel){
 		travelService.addTravel(travel);
-		return new ResponseEntity<>(new ResponseDTO("Travels saved", "202"),HttpStatus.ACCEPTED);
+		return new ResponseEntity<>(new ResponseDTO("Travel saved", "202"),HttpStatus.ACCEPTED);
 	}
 	
 	

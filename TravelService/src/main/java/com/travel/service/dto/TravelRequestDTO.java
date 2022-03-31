@@ -10,8 +10,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 
 public class TravelRequestDTO {
@@ -22,6 +24,7 @@ public class TravelRequestDTO {
 	@NotBlank(message = "Destination should not be blank")
 	@NotNull
 	String destination;
+	@NotNull
 	@Temporal(TemporalType.DATE)
 	LocalDate date;
 	@NotNull
@@ -63,9 +66,13 @@ public class TravelRequestDTO {
 		return time;
 	}
 
-	public void setTime(LocalTime time) {
-		this.time = time;
+	public void setTime(String time) {
+		this.time = LocalTime.parse(time);
 	}
+	
+//	public void setTime(LocalTime time) {
+//		this.time = time;
+//	}
 
 	public Integer getTrainId() {
 		return trainId;

@@ -2,8 +2,8 @@ package com.travel.service.dto;
 
 public class TrainDetailsResponseDto {
 	
-	String message; 
-	String statusCode;
+	private String message; 
+	private String statusCode;
 	private TrainDetailsDto data;
 
 	

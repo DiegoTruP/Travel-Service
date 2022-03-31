@@ -1,0 +1,3 @@
+com\travel\service\service\impl\TravelServiceImplTest.class
+com\travel\service\TravelServiceApplicationTests.class
+com\travel\service\controller\TravelControllerTest.class

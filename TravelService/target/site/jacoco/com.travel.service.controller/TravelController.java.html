@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TravelController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TravelService</a> &gt; <a href="index.source.html" class="el_package">com.travel.service.controller</a> &gt; <span class="el_source">TravelController.java</span></div><h1>TravelController.java</h1><pre class="source lang-java linenums">package com.travel.service.controller;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import com.travel.service.dto.ResponseDTO;
+import com.travel.service.dto.TrainDetailsDto;
+import com.travel.service.dto.TrainResponseResultsDto;
+import com.travel.service.dto.TravelDTO;
+import com.travel.service.dto.TravelRequestDTO;
+import com.travel.service.dto.TravelResponseResultsDto;
+import com.travel.service.dto.TravelTrainDTO;
+import com.travel.service.dto.TravelTrainResponseResultsDto;
+import com.travel.service.dto.UserResponseDTO;
+import com.travel.service.service.TravelService;
+
+@RestController
+@Validated
+<span class="fc" id="L35">public class TravelController {</span>
+	
+	@Autowired
+	TravelService travelService;
+	
+	@GetMapping(&quot;/travels&quot;)
+	public ResponseEntity&lt;TravelResponseResultsDto&gt; getTravels(){
+<span class="fc" id="L42">		List&lt;TravelDTO&gt; travelList = travelService.getAvailableTravels();</span>
+<span class="fc" id="L43">		TravelResponseResultsDto response = new TravelResponseResultsDto(&quot;Travels Results&quot;, &quot;200&quot;);</span>
+<span class="fc" id="L44">		response.setTravelList(travelList);</span>
+<span class="fc" id="L45">		return new ResponseEntity&lt;&gt;(response,HttpStatus.OK);</span>
+	}
+	
+	@GetMapping(&quot;/travels/trains&quot;)
+	public ResponseEntity&lt;TrainResponseResultsDto&gt; getAvailableTrainsBySearch(
+			@RequestParam(value = &quot;source&quot;,defaultValue = &quot;%&quot;) String source,
+			@RequestParam(value = &quot;destination&quot;,defaultValue = &quot;%&quot;) String destination,
+			@RequestParam(value = &quot;date&quot;,defaultValue = &quot;%&quot; ) String date
+			){
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if(date.equals(&quot;%&quot;))</span>
+<span class="fc" id="L55">			date = String.valueOf(LocalDate.now());</span>
+<span class="fc" id="L56">		List&lt;TrainDetailsDto&gt; trainList = travelService.getAvailableTrainsBySearch(source,destination,date);</span>
+<span class="fc" id="L57">		TrainResponseResultsDto response = new TrainResponseResultsDto(&quot;Trains Results&quot;, &quot;200&quot;);</span>
+<span class="fc" id="L58">		response.setTrainList(trainList);</span>
+<span class="fc" id="L59">		return new ResponseEntity&lt;&gt;(response,HttpStatus.OK);</span>
+	}
+	
+	@GetMapping(&quot;/travels/trains/results&quot;)
+	public ResponseEntity&lt;TravelTrainResponseResultsDto&gt; getAvailableTravelTrainBySearch(
+			@RequestParam(value = &quot;source&quot;,defaultValue = &quot;%&quot;) String source,
+			@RequestParam(value = &quot;destination&quot;,defaultValue = &quot;%&quot;) String destination,
+			@RequestParam(value = &quot;date&quot;,defaultValue = &quot;#{T(java.time.LocalDate).now()}&quot;)@DateTimeFormat(iso = ISO.DATE) LocalDate date
+			){
+<span class="fc" id="L68">		List&lt;TravelTrainDTO&gt; travelList = travelService.getAvailableTravelsBySearch(source,destination,date);</span>
+<span class="fc" id="L69">		TravelTrainResponseResultsDto response = new TravelTrainResponseResultsDto(&quot;Travel-Train Results&quot;, &quot;200&quot;);</span>
+<span class="fc" id="L70">		response.setTravelList(travelList);</span>
+<span class="fc" id="L71">		return new ResponseEntity&lt;&gt;(response,HttpStatus.OK);</span>
+	}
+	
+	@GetMapping(&quot;/travels/{travelId}&quot;)
+	public ResponseEntity&lt;TravelDTO&gt; getTravelById(@PathVariable(name = &quot;travelId&quot;) Integer travelId){
+<span class="fc" id="L76">		TravelDTO travel = travelService.getTravelById(travelId);</span>
+<span class="fc" id="L77">		return new ResponseEntity&lt;&gt;(travel,HttpStatus.OK);</span>
+	}
+	
+	@PostMapping(&quot;/travels&quot;)
+	public ResponseEntity&lt;ResponseDTO&gt; addTravel(@RequestBody@Valid TravelRequestDTO travel){
+<span class="fc" id="L82">		travelService.addTravel(travel);</span>
+<span class="fc" id="L83">		return new ResponseEntity&lt;&gt;(new ResponseDTO(&quot;Travel saved&quot;, &quot;202&quot;),HttpStatus.ACCEPTED);</span>
+	}
+	
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
