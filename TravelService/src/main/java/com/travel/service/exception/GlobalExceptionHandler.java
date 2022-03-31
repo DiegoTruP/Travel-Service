@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import constant.ErrorConstant;
+import com.travel.service.constant.ErrorConstant;
+
 import feign.FeignException;
 
 @RestControllerAdvice

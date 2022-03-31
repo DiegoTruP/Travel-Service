@@ -2,5 +2,5 @@ projectKey=Travel
 serverUrl=http://localhost:9000
 serverVersion=7.8.0.26217
 dashboardUrl=http://localhost:9000/dashboard?id=Travel
-ceTaskId=AX_c2xkdDkLlHYN35soX
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AX_c2xkdDkLlHYN35soX
+ceTaskId=AX_eWD7CDkLlHYN35soq
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AX_eWD7CDkLlHYN35soq

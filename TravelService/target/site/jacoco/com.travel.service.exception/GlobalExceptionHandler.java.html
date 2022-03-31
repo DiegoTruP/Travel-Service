@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TravelService</a> &gt; <a href="index.source.html" class="el_package">com.travel.service.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.travel.service.exception;
+
+import java.time.LocalDateTime;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import com.travel.service.constant.ErrorConstant;
+
+import feign.FeignException;
+
+@RestControllerAdvice
+<span class="fc" id="L17">public class GlobalExceptionHandler {</span>
+
+	@ExceptionHandler(TravelNotFoundException.class)
+	ResponseEntity&lt;ErrorResponse&gt; travelNotFound(TravelNotFoundException ex){
+<span class="fc" id="L21">		ErrorResponse response = new ErrorResponse();</span>
+<span class="fc" id="L22">		response.setMessage(ex.getMessage());</span>
+<span class="fc" id="L23">		response.setStatusCode(ErrorConstant.TRAVEL_NOT_FOUND);</span>
+		
+<span class="fc" id="L25">		return new ResponseEntity&lt;&gt;(response,HttpStatus.OK);</span>
+	}
+	
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity&lt;ValidationErrorResponse&gt; handleValidationException(MethodArgumentNotValidException ex){
+<span class="fc" id="L31">		ValidationErrorResponse validationErrorResponse = new ValidationErrorResponse(&quot;Invalid Arguments Passed&quot;,ErrorConstant.INVALID_ARGS);</span>
+<span class="fc" id="L32">		ex.getBindingResult().getFieldErrors().stream().forEach(error -&gt; {</span>
+<span class="fc" id="L33">			validationErrorResponse.getInvalidArguments().put(error.getField(),error.getDefaultMessage());	</span>
+<span class="fc" id="L34">		});</span>
+		
+<span class="fc" id="L36">		validationErrorResponse.setDate(LocalDateTime.now());</span>
+		
+<span class="fc" id="L38">		return new ResponseEntity&lt;&gt;(validationErrorResponse,HttpStatus.OK);</span>
+	}
+	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity&lt;ErrorResponse&gt; handleArgumentMismatchException(MethodArgumentTypeMismatchException ex){
+<span class="nc" id="L43">		ErrorResponse errorResponse = new ErrorResponse();</span>
+<span class="nc" id="L44">		errorResponse.setMessage(ex.getMessage());</span>
+<span class="nc" id="L45">		errorResponse.setStatusCode(ex.getErrorCode());</span>
+		
+		
+<span class="nc" id="L48">		return new ResponseEntity&lt;&gt;(errorResponse,HttpStatus.OK);</span>
+	}
+	
+	@ExceptionHandler(ServiceNotAvailableException.class)
+	ResponseEntity&lt;ErrorResponse&gt; travelNotFound(ServiceNotAvailableException ex){
+<span class="fc" id="L53">		ErrorResponse response = new ErrorResponse();</span>
+<span class="fc" id="L54">		response.setMessage(ex.getMessage());</span>
+<span class="fc" id="L55">		response.setStatusCode(ErrorConstant.SERVICE_NOT_AVAILABLE);</span>
+		
+<span class="fc" id="L57">		return new ResponseEntity&lt;&gt;(response,HttpStatus.OK);</span>
+	}
+	
+	@ExceptionHandler(FeignException.class)
+	public ResponseEntity&lt;ErrorResponse&gt; handleException(FeignException ex){
+<span class="nc" id="L62">		ErrorResponse errorResponse = new ErrorResponse();</span>
+<span class="nc" id="L63">		errorResponse.setMessage(ex.getMessage());</span>
+<span class="nc" id="L64">		errorResponse.setStatusCode(&quot;F500&quot;);</span>
+<span class="nc" id="L65">		return new ResponseEntity&lt;&gt;(errorResponse,HttpStatus.OK);</span>
+	}
+	
+	@ExceptionHandler(TrainNotFoundException.class)
+	public ResponseEntity&lt;ErrorResponse&gt; exceptionHandler(TrainNotFoundException ex) {
+<span class="nc" id="L70">		ErrorResponse errorResponse = new ErrorResponse();</span>
+<span class="nc" id="L71">		errorResponse.setMessage(ex.getMessage());</span>
+<span class="nc" id="L72">		errorResponse.setStatusCode(ErrorConstant.TRAIN_NOT_FOUND);</span>
+<span class="nc" id="L73">		return new ResponseEntity&lt;&gt;(errorResponse, HttpStatus.OK);</span>
+	}
+	
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

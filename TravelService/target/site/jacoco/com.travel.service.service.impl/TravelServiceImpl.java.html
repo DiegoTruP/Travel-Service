@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TravelServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TravelService</a> &gt; <a href="index.source.html" class="el_package">com.travel.service.service.impl</a> &gt; <span class="el_source">TravelServiceImpl.java</span></div><h1>TravelServiceImpl.java</h1><pre class="source lang-java linenums">package com.travel.service.service.impl;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.naming.ServiceUnavailableException;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.travel.service.client.TrainClient;
+import com.travel.service.client.UserClient;
+import com.travel.service.constant.ErrorConstant;
+import com.travel.service.dto.TrainDetailsDto;
+import com.travel.service.dto.TrainDetailsResponseDto;
+import com.travel.service.dto.TravelDTO;
+import com.travel.service.dto.TravelRequestDTO;
+import com.travel.service.dto.TravelTrainDTO;
+import com.travel.service.dto.UserRequestDTO;
+import com.travel.service.dto.UserResponseDTO;
+import com.travel.service.entity.Travel;
+import com.travel.service.exception.ServiceNotAvailableException;
+import com.travel.service.exception.TrainNotFoundException;
+import com.travel.service.exception.TravelNotFoundException;
+import com.travel.service.repository.TravelRepository;
+import com.travel.service.service.TravelService;
+
+@Service
+<span class="fc" id="L39">public class TravelServiceImpl implements TravelService{</span>
+	
+	@Autowired
+	TravelRepository travelRepository;
+	
+	@Autowired(required = false)
+	TrainClient trainClient;
+	
+	@Autowired(required = false)
+	UserClient userClient;
+	
+	@Autowired
+	CircuitBreakerFactory circuitBreakerFactory;
+
+	@Override
+	public List&lt;TravelDTO&gt; getAvailableTravels() {
+<span class="fc" id="L55">		return travelRepository.findAllTravels();</span>
+	}
+
+	@Override
+	public List&lt;TrainDetailsDto&gt; getAvailableTrainsBySearch(String source, String destination, String date) {
+<span class="fc" id="L60">		LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);</span>
+<span class="fc" id="L61">		List&lt;TravelDTO&gt; travelList = travelRepository.findAllbySearch(source,destination,localDate);</span>
+		List&lt;TrainDetailsDto&gt; trainList;
+<span class="fc" id="L63">		trainList = travelList.stream().map(travel -&gt; trainClient.getTrainById(travel.getTrainId()).getBody().getData()).collect(Collectors.toList());</span>
+<span class="fc" id="L64">		return trainList;</span>
+	}
+
+	@Override
+	public TravelDTO getTravelById(Integer travelId) {
+<span class="fc" id="L69">		Optional&lt;TravelDTO&gt; travel = travelRepository.findByTravelId(travelId);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		if(!travel.isPresent())</span>
+<span class="fc" id="L71">			throw new TravelNotFoundException(&quot;Travel Not Found : ID-&quot;+travelId);</span>
+<span class="fc" id="L72">		return travel.get();</span>
+	}
+
+	@Override
+	public TravelDTO addTravel(TravelRequestDTO travelDto) {
+<span class="fc" id="L77">		Travel travel = new Travel();</span>
+<span class="fc" id="L78">		BeanUtils.copyProperties(travelDto, travel);</span>
+<span class="fc" id="L79">		travel=travelRepository.save(travel);</span>
+<span class="fc" id="L80">		TravelDTO travelResult = new TravelDTO(0,&quot;&quot;,&quot;&quot;,LocalDate.now(),LocalTime.now(),0,0.0);</span>
+<span class="fc" id="L81">		BeanUtils.copyProperties(travel, travelResult);</span>
+<span class="fc" id="L82">		return travelResult;</span>
+	}
+
+	@Override
+	public List&lt;TravelTrainDTO&gt; getAvailableTravelsBySearch(String source, String destination, LocalDate date) {
+<span class="fc" id="L87">		List&lt;TravelTrainDTO&gt; travelList = travelRepository.findAllTravelTrainbySearch(source,destination,date);</span>
+<span class="nc" id="L88">		travelList.stream().forEach(travel -&gt; {</span>
+<span class="fc" id="L89">			ResponseEntity&lt;TrainDetailsResponseDto&gt; trainResponse = getTrainById(travel.getTrainId());</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">			if(trainResponse.getStatusCode().equals(HttpStatus.SERVICE_UNAVAILABLE))</span>
+<span class="fc" id="L91">				throw new ServiceNotAvailableException(&quot;Train Service Not Available&quot;);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			if(trainResponse.getBody().getStatusCode().equals(&quot;T404&quot;))</span>
+<span class="nc" id="L93">				throw new TrainNotFoundException(trainResponse.getBody().getMessage());</span>
+<span class="nc" id="L94">			BeanUtils.copyProperties(trainResponse.getBody().getData(), travel);</span>
+<span class="nc" id="L95">		});</span>
+<span class="nc" id="L96">		return travelList;</span>
+	}
+	
+	private ResponseEntity&lt;TrainDetailsResponseDto&gt; getTrainById(Integer trainId) {
+<span class="fc" id="L100">		CircuitBreaker circuitBreaker = circuitBreakerFactory.create(&quot;circuitbreaker&quot;);</span>
+<span class="pc" id="L101">		return circuitBreaker.run(() -&gt; trainClient.getTrainById(trainId),throwable -&gt; getDefaultTrainResponse());</span>
+	}
+	
+	private ResponseEntity&lt;TrainDetailsResponseDto&gt; getDefaultTrainResponse() {
+<span class="fc" id="L105">		TrainDetailsResponseDto response = new TrainDetailsResponseDto(&quot;Connection Error&quot;, ErrorConstant.SERVICE_NOT_FOUND);</span>
+<span class="fc" id="L106">		response.setData(new TrainDetailsDto());</span>
+//		if(response.getMessage().equals(&quot;Connection Error&quot;))
+//			throw new ServiceNotAvailableException(&quot;Service Not Available&quot;);
+<span class="fc" id="L109">		return new ResponseEntity&lt;&gt;(response,HttpStatus.SERVICE_UNAVAILABLE);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

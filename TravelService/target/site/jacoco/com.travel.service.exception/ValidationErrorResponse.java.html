@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationErrorResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TravelService</a> &gt; <a href="index.source.html" class="el_package">com.travel.service.exception</a> &gt; <span class="el_source">ValidationErrorResponse.java</span></div><h1>ValidationErrorResponse.java</h1><pre class="source lang-java linenums">package com.travel.service.exception;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ValidationErrorResponse {
+	String message;
+	String statusCode;
+<span class="fc" id="L10">	Map&lt;String,String&gt; invalidArguments = new HashMap&lt;&gt;();</span>
+	LocalDateTime date;
+
+	public ValidationErrorResponse(String message, String statusCode) {
+<span class="fc" id="L14">		super();</span>
+<span class="fc" id="L15">		this.message = message;</span>
+<span class="fc" id="L16">		this.statusCode = statusCode;</span>
+<span class="fc" id="L17">	}</span>
+
+	public Map&lt;String, String&gt; getInvalidArguments() {
+<span class="fc" id="L20">		return invalidArguments;</span>
+	}
+
+	public void setInvalidArguments(Map&lt;String, String&gt; invalidArguments) {
+<span class="nc" id="L24">		this.invalidArguments = invalidArguments;</span>
+<span class="nc" id="L25">	}</span>
+
+	public String getMessage() {
+<span class="fc" id="L28">		return message;</span>
+	}
+
+	public void setMessage(String message) {
+<span class="nc" id="L32">		this.message = message;</span>
+<span class="nc" id="L33">	}</span>
+
+	public String getStatusCode() {
+<span class="fc" id="L36">		return statusCode;</span>
+	}
+
+	public void setStatusCode(String statusCode) {
+<span class="nc" id="L40">		this.statusCode = statusCode;</span>
+<span class="nc" id="L41">	}</span>
+
+	public LocalDateTime getDate() {
+<span class="fc" id="L44">		return date;</span>
+	}
+
+	public void setDate(LocalDateTime date) {
+<span class="fc" id="L48">		this.date = date;</span>
+<span class="fc" id="L49">	}</span>
+
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

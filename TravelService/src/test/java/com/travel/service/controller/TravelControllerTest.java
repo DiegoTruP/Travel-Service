@@ -19,7 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.service.dto.TravelDTO;
@@ -109,6 +109,13 @@ public class TravelControllerTest {
 		
 		String resultStr = result.getResponse().getContentAsString();
 		travelRequest.setPrice(100.0);
+	}
+	
+	@Test
+	void getTravelBytravelId() throws Exception {
+		//@GetMapping("/travels/{travelId}")
+		mockMvc.perform(get("/travels/{travelId]}",1))
+		.andExpect(status().isOk());
 	}
 	
 	

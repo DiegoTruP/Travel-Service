@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TravelRequestDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TravelService</a> &gt; <a href="index.source.html" class="el_package">com.travel.service.dto</a> &gt; <span class="el_source">TravelRequestDTO.java</span></div><h1>TravelRequestDTO.java</h1><pre class="source lang-java linenums">package com.travel.service.dto;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+
+
+<span class="fc" id="L19">public class TravelRequestDTO {</span>
+	
+	@NotBlank(message = &quot;Source should not be blank&quot;)
+	@NotNull
+	String source;
+	@NotBlank(message = &quot;Destination should not be blank&quot;)
+	@NotNull
+	String destination;
+	@NotNull
+	@Temporal(TemporalType.DATE)
+	LocalDate date;
+	@NotNull
+	@Temporal(TemporalType.TIME)
+	@DateTimeFormat(style = &quot;hh:mm&quot;)
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern=&quot;hh:mm&quot;)
+	LocalTime time;
+	@NotNull
+	@Min(value = 1,message = &quot;Train ID should be greater or equal to 1&quot;)
+	Integer trainId;
+	@Min(value = 0,message = &quot;Price should be greater or equal to 0&quot;)
+	Double price;
+
+	public String getSource() {
+<span class="fc" id="L42">		return source;</span>
+	}
+
+	public void setSource(String source) {
+<span class="fc" id="L46">		this.source = source;</span>
+<span class="fc" id="L47">	}</span>
+
+	public String getDestination() {
+<span class="fc" id="L50">		return destination;</span>
+	}
+
+	public void setDestination(String destination) {
+<span class="fc" id="L54">		this.destination = destination;</span>
+<span class="fc" id="L55">	}</span>
+
+	public LocalDate getDate() {
+<span class="fc" id="L58">		return date;</span>
+	}
+
+	public void setDate(LocalDate date) {
+<span class="fc" id="L62">		this.date = date;</span>
+<span class="fc" id="L63">	}</span>
+
+	public LocalTime getTime() {
+<span class="fc" id="L66">		return time;</span>
+	}
+
+	public void setTime(String time) {
+<span class="fc" id="L70">		this.time = LocalTime.parse(time);</span>
+<span class="fc" id="L71">	}</span>
+	
+//	public void setTime(LocalTime time) {
+//		this.time = time;
+//	}
+
+	public Integer getTrainId() {
+<span class="fc" id="L78">		return trainId;</span>
+	}
+
+	public void setTrainId(Integer trainId) {
+<span class="fc" id="L82">		this.trainId = trainId;</span>
+<span class="fc" id="L83">	}</span>
+
+	public Double getPrice() {
+<span class="fc" id="L86">		return price;</span>
+	}
+
+	public void setPrice(Double price) {
+<span class="fc" id="L90">		this.price = price;</span>
+<span class="fc" id="L91">	}</span>
+
+//	public TravelRequestDTO( String source, String destination, LocalDate date, LocalTime time,
+//			Integer trainId, Double price) {
+//		super();
+//		this.source = source;
+//		this.destination = destination;
+//		this.date = date;
+//		this.time = time;
+//		this.trainId = trainId;
+//		this.price = price;
+//	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

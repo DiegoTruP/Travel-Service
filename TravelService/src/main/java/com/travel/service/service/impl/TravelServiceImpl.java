@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.travel.service.client.TrainClient;
 import com.travel.service.client.UserClient;
+import com.travel.service.constant.ErrorConstant;
 import com.travel.service.dto.TrainDetailsDto;
 import com.travel.service.dto.TrainDetailsResponseDto;
 import com.travel.service.dto.TravelDTO;
@@ -33,8 +34,6 @@ import com.travel.service.exception.TrainNotFoundException;
 import com.travel.service.exception.TravelNotFoundException;
 import com.travel.service.repository.TravelRepository;
 import com.travel.service.service.TravelService;
-
-import constant.ErrorConstant;
 
 @Service
 public class TravelServiceImpl implements TravelService{
