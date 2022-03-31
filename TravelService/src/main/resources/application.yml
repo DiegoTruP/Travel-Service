@@ -1,7 +1,6 @@
 server:
-  port: 9091
-  servlet:
-    context-path: /java
+  port: 9099
+
 
 spring:
   application:

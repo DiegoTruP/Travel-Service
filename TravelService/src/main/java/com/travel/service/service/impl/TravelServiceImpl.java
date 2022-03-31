@@ -76,6 +76,11 @@ public class TravelServiceImpl implements TravelService{
 	public TravelDTO addTravel(TravelRequestDTO travelDto) {
 		Travel travel = new Travel();
 		BeanUtils.copyProperties(travelDto, travel);
+		ResponseEntity<TrainDetailsResponseDto> trainResponse = getTrainById(travel.getTrainId());
+		if(trainResponse.getStatusCode().equals(HttpStatus.SERVICE_UNAVAILABLE))
+			throw new ServiceNotAvailableException("Train Service Not Available");
+		if(trainResponse.getBody().getStatusCode().equals("T404"))
+			throw new TrainNotFoundException(trainResponse.getBody().getMessage());
 		travel=travelRepository.save(travel);
 		TravelDTO travelResult = new TravelDTO(0,"","",LocalDate.now(),LocalTime.now(),0,0.0);
 		BeanUtils.copyProperties(travel, travelResult);
